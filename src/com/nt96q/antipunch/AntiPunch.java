@@ -1,68 +1,15 @@
-package com.nt96q.antipunch.listeners;
+package com.nt96q.antipunch;
 
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import com.nt96q.antipunch.AntiPunch;
+import com.nt96q.antipunch.listeners.DamageListener;
 
-public class DamageListener implements Listener {
+public class AntiPunch extends JavaPlugin {
 	
-	AntiPunch plugin;
+	DamageListener damageListener;
 	
-	public DamageListener(AntiPunch plugin) {
-		this.plugin = plugin;
-		this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onDamage(EntityDamageByEntityEvent event) {
-		
-		if (event.isCancelled()) {
-			return;
-		}
-		
-		if (!(event.getEntity() instanceof Player)) {
-			return;
-		}
-		
-		Player victim = (Player) event.getEntity();
-		Player attacker = this.getAttacker(event.getDamager());
-		
-		if (attacker == null) {
-			return;
-		}
-		
-		if (!victim.equals(attacker)) {
-			return;
-		}
-		
-		if (!attacker.getItemInHand().containsEnchantment(Enchantment.ARROW_KNOCKBACK)) {
-			return;
-		}
-		
-		event.setCancelled(true);
-		return;
-	}
-	
-	@SuppressWarnings("deprecation")
-	public Player getAttacker(Entity entity) {
-		if (entity instanceof Player) {
-			return (Player) entity;
-		} else if (entity instanceof Projectile) {
-			Projectile projectile = (Projectile) entity;
-			if (!(projectile.getShooter() instanceof Player)) {
-				return null;
-			} else {
-				return (Player) projectile.getShooter();
-			}
-		}
-		return null;
+	public void onEnable() {
+		this.damageListener = new DamageListener(this);
 	}
 
 }
